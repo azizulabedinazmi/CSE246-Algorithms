@@ -1,0 +1,128 @@
+Name : Azizul Abedin Azmi
+ID : 2022-1-60-130
+Section : 04
+
+LAB07: Topic : 01
+
+#include <stdio.h>
+
+void printLIS(int arr[], int n) {
+    int lis[n];
+    int prev[n];
+
+    for (int i = 0; i < n; i++) {
+        lis[i] = 1;
+        prev[i] = -1;
+    }
+
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (arr[i] > arr[j] && lis[i] < lis[j] + 1) {
+                lis[i] = lis[j] + 1;
+                prev[i] = j;
+            }
+        }
+    }
+
+    int maxLength = 0, maxIndex = 0;
+    for (int i = 0; i < n; i++) {
+        if (lis[i] > maxLength) {
+            maxLength = lis[i];
+            maxIndex = i;
+        }
+    }
+
+    printf("Length of LIS: %d\n", maxLength);
+
+    int lisSequence[maxLength];
+    int k = maxLength - 1;
+    for (int i = maxIndex; i >= 0; i = prev[i]) {
+        lisSequence[k--] = arr[i];
+        if (prev[i] == -1)
+            break;
+    }
+
+    printf("LIS: ");
+    for (int i = 0; i < maxLength; i++) {
+        printf("%d", lisSequence[i]);
+        if (i < maxLength - 1)
+            printf(", ");
+    }
+    printf("\n");
+}
+
+int main() {
+    int n;
+    
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    int arr[n];
+    printf("Enter the elements of the array: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    printLIS(arr, n);
+
+    return 0;
+}
+
+LAB07: Topic : 02
+
+#include <stdio.h>
+#include <string.h>
+
+void printLCS(char *X, char *Y, int m, int n) {
+    int L[m+1][n+1];
+
+    for (int i = 0; i <= m; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i == 0 || j == 0)
+                L[i][j] = 0;
+            else if (X[i-1] == Y[j-1])
+                L[i][j] = L[i-1][j-1] + 1;
+            else
+                L[i][j] = L[i-1][j] > L[i][j-1] ? L[i-1][j] : L[i][j-1];
+        }
+    }
+
+    int length = L[m][n];
+    printf("Length of LCS: %d\n", length);
+
+    char lcs[length+1];
+    lcs[length] = '\0';
+
+    int i = m, j = n;
+    while (i > 0 && j > 0) {
+        if (X[i-1] == Y[j-1]) {
+            lcs[length-1] = X[i-1];
+            i--;
+            j--;
+            length--;
+        }
+        else if (L[i-1][j] > L[i][j-1])
+            i--;
+        else
+            j--;
+    }
+
+    printf("LCS: %s\n", lcs);
+}
+
+int main() {
+    char X[100], Y[100];
+    
+    printf("Enter the first string: ");
+    scanf("%s", X);
+    
+    printf("Enter the second string: ");
+    scanf("%s", Y);
+
+    int m = strlen(X);
+    int n = strlen(Y);
+
+    printLCS(X, Y, m, n);
+
+    return 0;
+}

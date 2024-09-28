@@ -1,0 +1,112 @@
+Name : Azizul Abedin Azmi
+ID : 2022-1-60-130
+Section : 04
+
+LAB04: Topic : 01
+
+#include <stdio.h>
+
+int gcd(int a, int b) {
+
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+int main() {
+    int a, b;
+
+    printf("Enter two numbers:\n");
+    scanf("%d %d", &a, &b);
+
+    int result = gcd(a, b);
+
+    printf("GCD of %d and %d is %d\n", a, b, result);
+
+    return 0;
+}
+
+
+LAB04: Topic : 02
+
+#include <stdio.h>
+
+void printPrimeFactors(int n) {
+
+    while (n % 2 == 0) {
+        printf("2 ");
+        n /= 2;
+    }
+    
+    for (int i = 3; i * i <= n; i += 2) {
+        while (n % i == 0) {
+            printf("%d ", i);
+            n /= i;
+        }
+    }
+
+    if (n > 2) {
+        printf("%d ", n);
+    }
+}
+
+int main() {
+    int n;
+
+    printf("Enter a number: ");
+    scanf("%d", &n);
+
+    if (n <= 0) {
+        printf("Please enter a positive integer.\n");
+        return 1;
+    }
+
+    printPrimeFactors(n);
+
+    return 0;
+}
+
+
+LAB04: Topic : 03
+
+#include <stdio.h>
+#include <stdbool.h>
+
+void sieveOfEratosthenes(int n) {
+
+    bool prime[n + 1];
+    for (int i = 0; i <= n; i++) {
+        prime[i] = true;
+    }
+    prime[0] = prime[1] = false;
+    for (int p = 2; p * p <= n; p++) {
+        if (prime[p] == true) {
+            for (int i = p * p; i <= n; i += p) {
+                prime[i] = false;
+            }
+        }
+    }
+    for (int p = 2; p <= n; p++) {
+        if (prime[p]) {
+            printf("%d ", p);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int n;
+
+    printf("Enter a number: ");
+    scanf("%d", &n);
+
+    if (n < 2) {
+        printf("There are no prime numbers less than or equal to %d.\n", n);
+        return 1;
+    }
+    sieveOfEratosthenes(n);
+    return 0;
+}

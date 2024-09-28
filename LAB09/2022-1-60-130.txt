@@ -1,0 +1,237 @@
+Name : Azizul Abedin Azmi
+ID : 2022-1-60-130
+Section : 04
+
+LAB09: Topic : 01
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
+
+#define MAX_NODES 100
+s
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* head;
+} AdjList;
+
+typedef struct {
+    int items[MAX_NODES];
+    int front, rear;
+} Queue;
+
+void initQueue(Queue* q);
+bool isQueueEmpty(Queue* q);
+void enqueue(Queue* q, int value);
+int dequeue(Queue* q);
+void addEdge(AdjList* list, int u, int v);
+void bfs(int n, AdjList* graph, int source, int dist[], int parent[]);
+void printPath(int parent[], int destination);
+void freeGraph(AdjList* graph, int n);
+
+int main() {
+    int n, e;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    AdjList graph[MAX_NODES];
+    for (int i = 0; i < n; i++) {
+        graph[i].head = NULL;
+    }
+
+    printf("Enter edges (u v):\n");
+    for (int i = 0; i < e; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(graph, u, v);
+    }
+
+    int source;
+    printf("Source node: ");
+    scanf("%d", &source);
+
+    int dist[MAX_NODES];
+    int parent[MAX_NODES];
+
+    bfs(n, graph, source, dist, parent);
+
+    for (int i = 0; i < n; i++) {
+        if (i != source) {
+            printf("Path %d to %d: ", source, i);
+            printPath(parent, i);
+            printf(" Cost: %d\n", dist[i]);
+        }
+    }
+
+    freeGraph(graph, n);
+
+    return 0;
+}
+
+void initQueue(Queue* q) {
+    q->front = -1;
+    q->rear = -1;
+}
+
+bool isQueueEmpty(Queue* q) {
+    return q->front == -1;
+}
+
+void enqueue(Queue* q, int value) {
+    if (q->rear == MAX_NODES - 1)
+        return;
+    if (isQueueEmpty(q))
+        q->front = 0;
+    q->items[++q->rear] = value;
+}
+
+int dequeue(Queue* q) {
+    if (isQueueEmpty(q))
+        return -1;
+    int value = q->items[q->front++];
+    if (q->front > q->rear)
+        initQueue(q);
+    return value;
+}
+
+void addEdge(AdjList* list, int u, int v) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = list[u].head;
+    list[u].head = newNode;
+
+    newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = u;
+    newNode->next = list[v].head;
+    list[v].head = newNode;
+}
+
+void bfs(int n, AdjList* graph, int source, int dist[], int parent[]) {
+    Queue q;
+    initQueue(&q);
+    bool visited[MAX_NODES];
+
+    for (int i = 0; i < n; i++) {
+        visited[i] = false;
+        dist[i] = INT_MAX;
+        parent[i] = -1;
+    }
+
+    visited[source] = true;
+    dist[source] = 0;
+    enqueue(&q, source);
+
+    while (!isQueueEmpty(&q)) {
+        int u = dequeue(&q);
+        Node* temp = graph[u].head;
+        while (temp != NULL) {
+            int v = temp->vertex;
+            if (!visited[v]) {
+                visited[v] = true;
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+                enqueue(&q, v);
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+
+void printPath(int parent[], int destination) {
+    if (parent[destination] == -1) {
+        printf("%d", destination);
+        return;
+    }
+    printPath(parent, parent[destination]);
+    printf("->%d", destination);
+}
+
+void freeGraph(AdjList* graph, int n) {
+    for (int i = 0; i < n; i++) {
+        Node* temp = graph[i].head;
+        while (temp != NULL) {
+            Node* toDelete = temp;
+            temp = temp->next;
+            free(toDelete);
+        }
+    }
+}
+
+LAB09: Topic : 02
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_NODES 1000
+
+int graph[MAX_NODES][MAX_NODES];
+int color[MAX_NODES];
+
+bool isBipartite(int n, int start) {
+   
+    int queue[MAX_NODES], front = 0, rear = 0;
+    
+    color[start] = 0;
+    queue[rear++] = start;
+
+    while (front < rear) {
+        int node = queue[front++];
+
+        for (int neighbor = 0; neighbor < n; neighbor++) {
+            if (graph[node][neighbor]) {
+       
+                if (color[neighbor] == -1) {
+                    color[neighbor] = 1 - color[node];
+                    queue[rear++] = neighbor;
+                }
+
+                else if (color[neighbor] == color[node]) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+int main() {
+    int n, m;
+    printf("Enter the number of nodes and edges:\n");
+    scanf("%d %d", &n, &m);
+
+  
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            graph[i][j] = 0;
+        }
+        color[i] = -1;
+    }
+
+    printf("Enter the edges (u v):\n");
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        graph[u][v] = 1;
+        graph[v][u] = 1;
+    }
+
+    0
+    if (isBipartite(n, 0)) {
+        printf("Bipartite\n");
+    } else {
+        printf("Not Bipartite\n");
+    }
+
+    return 0;
+}

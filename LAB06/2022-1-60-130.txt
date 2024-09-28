@@ -1,0 +1,154 @@
+Name : Azizul Abedin Azmi
+ID : 2022-1-60-130
+Section : 04
+
+LAB06: Topic : 02
+
+#include <stdio.h>
+#include <stdbool.h>
+
+bool isSubsetSum(int set[], int n, int target) {
+    if (target == 0) return true;
+    if (n == 0) return false;
+
+
+    if (set[n-1] > target) {
+        return isSubsetSum(set, n-1, target);
+    }
+    return isSubsetSum(set, n-1, target) || isSubsetSum(set, n-1, target - set[n-1]);
+}
+
+int main() {
+    int n, target;
+
+    printf("Enter the number of elements in the set: ");
+    scanf("%d", &n);
+
+    int set[n];
+
+    printf("Enter the elements of the set:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &set[i]);
+    }
+
+    printf("Enter the target sum: ");
+    scanf("%d", &target);
+
+    if (isSubsetSum(set, n, target)) {
+        printf("Yes\n");
+    } else {
+        printf("No\n");
+    }
+
+    return 0;
+}
+
+LAB06: Topic : 04
+
+#include <stdio.h>
+#include <limits.h>
+
+// Function to find the minimum number of coins required with infinite supply
+int coinChangeInfinite(int coins[], int n, int K) {
+    int dp[K + 1];
+
+    // Initialize dp array with a large number
+    for (int i = 0; i <= K; i++) {
+        dp[i] = INT_MAX;
+    }
+
+    // Base case: 0 coins are needed to make 0
+    dp[0] = 0;
+
+    // Compute the minimum number of coins for all values up to K
+    for (int i = 1; i <= K; i++) {
+        for (int j = 0; j < n; j++) {
+            if (coins[j] <= i && dp[i - coins[j]] != INT_MAX) {
+                dp[i] = (dp[i] < dp[i - coins[j]] + 1) ? dp[i] : dp[i - coins[j]] + 1;
+            }
+        }
+    }
+
+    return dp[K] == INT_MAX ? -1 : dp[K]; // Return -1 if no solution is found
+}
+
+// Function to find the minimum number of coins required with finite supply
+int coinChangeFinite(int coins[], int quantity[], int n, int K) {
+    int dp[K + 1];
+
+    // Initialize dp array with a large number
+    for (int i = 0; i <= K; i++) {
+        dp[i] = INT_MAX;
+    }
+
+    // Base case: 0 coins are needed to make 0
+    dp[0] = 0;
+
+    // Compute the minimum number of coins for all values up to K
+    for (int i = 0; i < n; i++) {
+        for (int j = K; j >= coins[i]; j--) {
+            for (int k = 1; k <= quantity[i] && k * coins[i] <= j; k++) {
+                if (dp[j - k * coins[i]] != INT_MAX) {
+                    dp[j] = (dp[j] < dp[j - k * coins[i]] + k) ? dp[j] : dp[j - k * coins[i]] + k;
+                }
+            }
+        }
+    }
+
+    return dp[K] == INT_MAX ? -1 : dp[K]; // Return -1 if no solution is found
+}
+
+int main() {
+    int choice, n, K;
+
+    // Menu for user to select the problem type
+    printf("Select the problem type:\n");
+    printf("1. Infinite supply of coins\n");
+    printf("2. Finite supply of coins\n");
+    printf("Enter your choice (1 or 2): ");
+    scanf("%d", &choice);
+
+    printf("Enter the number of coin types: ");
+    scanf("%d", &n);
+
+    int coins[n];
+    int quantity[n]; // Only used for finite supply case
+
+    // Input coin values
+    printf("Enter the coin values:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &coins[i]);
+    }
+
+    if (choice == 2) {
+        // Input coin quantities for finite supply case
+        printf("Enter the quantities of each coin:\n");
+        for (int i = 0; i < n; i++) {
+            scanf("%d", &quantity[i]);
+        }
+    }
+
+    // Input the amount K
+    printf("Enter the amount K: ");
+    scanf("%d", &K);
+
+    int result;
+    if (choice == 1) {
+        // Calculate minimum coins with infinite supply
+        result = coinChangeInfinite(coins, n, K);
+    } else if (choice == 2) {
+        // Calculate minimum coins with finite supply
+        result = coinChangeFinite(coins, quantity, n, K);
+    } else {
+        printf("Invalid choice.\n");
+        return 1;
+    }
+
+    if (result != -1) {
+        printf("Minimum number of coins required: %d\n", result);
+    } else {
+        printf("No solution possible\n");
+    }
+
+    return 0;
+}

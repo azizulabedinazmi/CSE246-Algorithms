@@ -1,0 +1,261 @@
+Name : Azizul Abedin Azmi
+ID : 2022-1-60-130
+Section : 04
+
+LAB02: Topic : 01
+
+
+#include <iostream>
+using namespace std;
+
+int binarySearch(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid] == target) {
+            return mid;
+        } else if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+
+
+int main() {
+    int n;
+    cout << "Enter the number of elements in the array: ";
+    cin >> n;
+
+    int arr[n];
+    cout << "Enter the sorted array elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    int target;
+    cout << "Enter the target value: ";
+    cin >> target;
+
+    int index = binarySearch(arr, n, target);
+    if (index == -1) {
+        cout << "Target not found in the array." << endl;
+    } else {
+        cout << "Target found at index: " << index << endl;
+    }
+
+    return 0;
+}
+
+
+LAB02: Topic : 02
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void merge(vector<int>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    vector<int> L(n1), R(n2);
+
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    vector<int> arr;
+    int num;
+    cout << "Enter the elements of the array (enter -1 to stop): ";
+    while (cin >> num && num != -1) {
+        arr.push_back(num);
+    }
+
+    mergeSort(arr, 0, arr.size() - 1);
+
+    cout << "Sorted array: ";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
+LAB02: Topic : 03
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int main() {
+    vector<int> arr;
+    int num;
+    cout << "Enter the elements of the array (enter -1 to stop): ";
+    while (cin >> num && num != -1) {
+        arr.push_back(num);
+    }
+
+    quickSort(arr, 0, arr.size() - 1);
+
+    cout << "Sorted array: ";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
+LAB02: Topic : 04
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cfloat>
+using namespace std;
+
+struct Point {
+    int x, y;
+};
+
+bool compareX(const Point& a, const Point& b) {
+    return a.x < b.x;
+}
+
+bool compareY(const Point& a, const Point& b) {
+    return a.y < b.y;
+}
+
+float dist(const Point& p1, const Point& p2) {
+    return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+}
+
+float bruteForce(const vector<Point>& points, int n) {
+    float minDist = FLT_MAX;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            minDist = min(minDist, dist(points[i], points[j]));
+        }
+    }
+    return minDist;
+}
+
+float closestUtil(vector<Point>& strip, float d) {
+    float minDist = d;
+    sort(strip.begin(), strip.end(), compareY);
+    for (size_t i = 0; i < strip.size(); ++i) {
+        for (size_t j = i + 1; j < strip.size() && (strip[j].y - strip[i].y) < minDist; ++j) {
+            minDist = min(minDist, dist(strip[i], strip[j]));
+        }
+    }
+    return minDist;
+}
+
+float closestPairUtil(vector<Point>& points, int n) {
+    if (n <= 3) {
+        return bruteForce(points, n);
+    }
+
+    int mid = n / 2;
+    Point midPoint = points[mid];
+
+    vector<Point> left(points.begin(), points.begin() + mid);
+    vector<Point> right(points.begin() + mid, points.end());
+
+    float dl = closestPairUtil(left, mid);
+    float dr = closestPairUtil(right, n - mid);
+
+    float d = min(dl, dr);
+
+    vector<Point> strip;
+    for (int i = 0; i < n; ++i) {
+        if (abs(points[i].x - midPoint.x) < d) {
+            strip.push_back(points[i]);
+        }
+    }
+
+    return min(d, closestUtil(strip, d));
+}
+
+float closestPair(vector<Point>& points) {
+    sort(points.begin(), points.end(), compareX);
+    return closestPairUtil(points, points.size());
+}
+
+int main() {
+    vector<Point> points = {{2, 3}, {12, 30}, {40, 50}, {5, 1}, {12, 10}, {3, 4}};
+    float closestDistance = closestPair(points);
+    cout << "The smallest distance is: " << closestDistance << endl;
+
+    return 0;
+}

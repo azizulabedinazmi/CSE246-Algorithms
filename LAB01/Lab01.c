@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define SIZE 100000
+
+
+void generateRandomNumbers(const char *fileName);
+void benchmarkAndSort(const char *fileName);
+void insertionSort(int array[], int size);
+void bubbleSort(int array[], int size);
+void selectionSort(int array[], int size);
+
+int main() {
+    const char *fileName = "random_numbers.txt";
+
+    generateRandomNumbers(fileName);
+
+
+    printf("Number of integers read: %d\n", SIZE);
+
+
+    benchmarkAndSort(fileName);
+
+    return 0;
+}
+
+void generateRandomNumbers(const char *fileName) {
+    FILE *file = fopen(fileName, "w");
+    if (file == NULL) {
+        perror("Failed to open file");
+        exit(EXIT_FAILURE);
+    }
+
+    srand(time(NULL));
+
+    for (int i = 0; i < SIZE; i++) {
+        fprintf(file, "%d\n", rand());
+    }
+
+    fclose(file);
+}
+
+void benchmarkAndSort(const char *fileName) {
+    FILE *file = fopen(fileName, "r");
+    if (file == NULL) {
+        perror("Failed to open file");
+        exit(EXIT_FAILURE);
+    }
+
+    int array[SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        fscanf(file, "%d", &array[i]);
+    }
+    fclose(file);
+
+    clock_t start, end;
+    double cpu_time_used;
+
+
+    int insertionSortArray[SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        insertionSortArray[i] = array[i];
+    }
+    start = clock();
+    insertionSort(insertionSortArray, SIZE);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Insertion Sort Time: %f seconds\n", cpu_time_used);
+
+
+    int bubbleSortArray[SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        bubbleSortArray[i] = array[i];
+    }
+    start = clock();
+    bubbleSort(bubbleSortArray, SIZE);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Bubble Sort Time: %f seconds\n", cpu_time_used);
+
+
+    int selectionSortArray[SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        selectionSortArray[i] = array[i];
+    }
+    start = clock();
+    selectionSort(selectionSortArray, SIZE);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Selection Sort Time: %f seconds\n", cpu_time_used);
+}
+
+void insertionSort(int array[], int size) {
+    int i, key, j;
+    for (i = 1; i < size; i++) {
+        key = array[i];
+        j = i - 1;
+
+
+        while (j >= 0 && array[j] > key) {
+            array[j + 1] = array[j];
+            j = j - 1;
+        }
+        array[j + 1] = key;
+    }
+}
+
+void bubbleSort(int array[], int size) {
+    int i, j;
+    for (i = 0; i < size - 1; i++) {
+
+        for (j = 0; j < size - i - 1; j++) {
+            if (array[j] > array[j + 1]) {
+                int temp = array[j];
+                array[j] = array[j + 1];
+                array[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void selectionSort(int array[], int size) {
+    int i, j, min_idx;
+    for (i = 0; i < size - 1; i++) {
+        min_idx = i;
+        for (j = i + 1; j < size; j++) {
+            if (array[j] < array[min_idx]) {
+                min_idx = j;
+            }
+        }
+        int temp = array[min_idx];
+        array[min_idx] = array[i];
+        array[i] = temp;
+    }
+}
